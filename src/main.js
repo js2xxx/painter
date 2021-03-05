@@ -1,4 +1,4 @@
-const { app } = require('electron');
+const { app, ipcMain } = require('electron');
 
 const window = require('./window');
 
@@ -14,4 +14,8 @@ app.on('activate', () => {
       if (mainWindow === null) {
             createWindow();
       }
+});
+
+ipcMain.on('safe-exit', (event) => {
+      app.exit();
 });

@@ -30,6 +30,13 @@ function createFileMenu() {
       return menu;
 }
 
+ipcMain.on('open-dialog', (event) => {
+      event.returnValue = dialog.showOpenDialogSync(BrowserWindow.getFocusedWindow(), {
+            defaultPath: app.getPath('documents'),
+            filters: [{ name: 'PNG 文件', extensions: ['png'] }]
+      });
+});
+
 ipcMain.on('save-dialog', (event) => {
       event.returnValue = dialog.showSaveDialogSync(BrowserWindow.getFocusedWindow(), {
             defaultPath: path.join(app.getPath('documents'), 'Untitled.png'),
@@ -37,12 +44,15 @@ ipcMain.on('save-dialog', (event) => {
       });
 });
 
-ipcMain.on('open-dialog', (event) => {
-      event.returnValue = dialog.showOpenDialogSync(BrowserWindow.getFocusedWindow(), {
-            defaultPath: app.getPath('documents'),
-            filters: [{ name: 'PNG 文件', extensions: ['png'] }]
+ipcMain.on('save-current', (event, currentFile) => {
+      event.returnValue = dialog.showMessageBoxSync(BrowserWindow.getFocusedWindow(), {
+            type: 'question',
+            message: '当前文件 ' + currentFile + ' 需要保存吗？',
+            buttons: ['是', '否', '取消'],
+            defaultId: 2,
+            cancelId: 2,
       });
-});
+})
 
 module.exports = {
       create: createFileMenu,

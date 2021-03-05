@@ -17,6 +17,10 @@ function createWindow() {
 
       mainWindow.webContents.openDevTools();
 
+      mainWindow.on('close', (event) => {
+            event.preventDefault();
+            mainWindow.webContents.send('action', 'exiting');
+      });
       mainWindow.on('closed', () => { mainWindow = null; });
 
       menu.createMenu();
@@ -25,6 +29,8 @@ function createWindow() {
 ipcMain.on('update-title', (_event, file) => {
       mainWindow.title = file + ' - 画图测试';
 });
+
+
 
 module.exports = {
       createWindow,

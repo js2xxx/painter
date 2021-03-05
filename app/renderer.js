@@ -1,17 +1,20 @@
-const fn_none = document.getElementById('fn_none');
-const fn_line = document.getElementById('fn_line');
-const fn_rect = document.getElementById('fn_rect');
-const fn_circle = document.getElementById('fn_circle');
+const fnNone = document.getElementById('fnNone');
+const fnStroke = document.getElementById('fnStroke');
+const fnLine = document.getElementById('fnLine');
+const fnRect = document.getElementById('fnRect');
+const fnCircle = document.getElementById('fnCircle');
 
 var paint = document.getElementById('paint');
 var ctx = paint.getContext('2d');
 var url = '';
 
-var start_x = 0;
-var start_y = 0;
-var start_available = false;
+var startX = 0;
+var startY = 0;
+var startAvailable = false;
 
-function refresh_image() {
+var changed = new Boolean(false);
+
+function refreshImage() {
       ctx.clearRect(0, 0, paint.width, paint.height);
       var previous = new Image();
       previous.src = url;
@@ -19,43 +22,54 @@ function refresh_image() {
 }
 
 paint.addEventListener('mousedown', (mouse) => {
-      start_x = mouse.offsetX;
-      start_y = mouse.offsetY;
-      start_available = true;
+      console.log(changed);
+
+      startX = mouse.offsetX;
+      startY = mouse.offsetY;
+      startAvailable = true;
       url = paint.toDataURL();
 });
 
 paint.addEventListener('mouseup', (_mouse) => {
-      start_available = false;
+      startAvailable = false;
       url = paint.toDataURL();
+      changed = true;
 });
 
 paint.addEventListener('mousemove', (mouse) => {
-      if (start_available) {
-            if (fn_line.checked) {
-                  refresh_image();
-
+      if (startAvailable) {
+            if (fnStroke.checked) {
                   ctx.beginPath();
-                  ctx.moveTo(start_x, start_y);
+                  ctx.moveTo(startX, startY);
                   ctx.lineTo(mouse.offsetX, mouse.offsetY);
                   ctx.stroke();
-            } else if (fn_rect.checked) {
-                  refresh_image();
+
+                  startX = mouse.offsetX;
+                  startY = mouse.offsetY;
+            } else if (fnLine.checked) {
+                  refreshImage();
 
                   ctx.beginPath();
-                  ctx.moveTo(start_x, start_y);
-                  ctx.strokeRect(start_x, start_y, mouse.offsetX - start_x, mouse.offsetY - start_y);
-            } else if (fn_circle.checked) {
-                  refresh_image();
+                  ctx.moveTo(startX, startY);
+                  ctx.lineTo(mouse.offsetX, mouse.offsetY);
+                  ctx.stroke();
+            } else if (fnRect.checked) {
+                  refreshImage();
 
                   ctx.beginPath();
-                  var rx = (mouse.offsetX - start_x) / 2;
-                  var ry = (mouse.offsetY - start_y) / 2;
+                  ctx.moveTo(startX, startY);
+                  ctx.strokeRect(startX, startY, mouse.offsetX - startX, mouse.offsetY - startY);
+            } else if (fnCircle.checked) {
+                  refreshImage();
+
+                  ctx.beginPath();
+                  var rx = (mouse.offsetX - startX) / 2;
+                  var ry = (mouse.offsetY - startY) / 2;
                   var r = Math.sqrt(rx * rx + ry * ry);
-                  ctx.arc(rx + start_x, ry + start_y, r, 0, Math.PI * 2);
+                  ctx.arc(rx + startX, ry + startY, r, 0, Math.PI * 2);
                   ctx.stroke();
             }
       }
 });
 
-window.preload.setActions();
+window.preload.setActions(changed);

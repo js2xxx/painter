@@ -4,16 +4,30 @@ const fs = require('fs');
 const prefix = 'data:image/png;base64,';
 
 var currentFile = '';
+var fileChanged;
 
-function updateCurrentFile(file) {
+function updateCurrentFile(file, paint) {
+      if (fileChanged) {
+            var button = ipcRenderer.sendSync('save-current', currentFile);
+            switch (button) {
+                  case 0:
+                        saveFile(paint, currentFile === '');
+                        break;
+                  case 1:
+                        break;
+                  default: return false;
+            }
+
+            fileChanged = false;
+      }
       currentFile = file;
       ipcRenderer.send('update-title', currentFile);
+      return true;
 }
 
 function openFile(paint) {
       var file = ipcRenderer.sendSync('open-dialog');
-      if (file) {
-            updateCurrentFile(file[0]);
+      if (file && updateCurrentFile(file[0], paint)) {
             fs.readFile(file[0], (err, data) => {
                   if (err) {
                         console.log(err);
@@ -37,7 +51,7 @@ function saveFile(paint, saveNew) {
       var buffer = Buffer.from(base64, 'base64');
 
       var file = currentFile;
-      if(saveNew || currentFile === '') {
+      if (saveNew || currentFile === '') {
             file = ipcRenderer.sendSync('save-dialog');
       }
       fs.writeFile(file, buffer, (error) => {
@@ -45,11 +59,14 @@ function saveFile(paint, saveNew) {
                   console.log(error)
             }
       });
-      updateCurrentFile(file);
+      fileChanged = false;
+      updateCurrentFile(file, paint);
 }
 
 contextBridge.exposeInMainWorld('preload', {
-      setActions: function () {
+      setActions: function (changed) {
+            fileChanged = changed;
+
             ipcRenderer.on('action', (event, arg) => {
                   var paint = document.getElementById('paint');
 
@@ -64,6 +81,12 @@ contextBridge.exposeInMainWorld('preload', {
 
                         case 'save-as':
                               saveFile(paint, true);
+                              break;
+
+                        case 'exiting':
+                              if(updateCurrentFile('', paint)) {
+                                    ipcRenderer.send('safe-exit');
+                              }
                               break;
                         default:
                               break;
