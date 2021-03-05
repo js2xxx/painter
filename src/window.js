@@ -27,7 +27,10 @@ function createWindow() {
 }
 
 ipcMain.on('update-title', (_event, file) => {
-      mainWindow.title = file + ' - 画图测试';
+      if (file !== '') {
+            file = file + ' - ';
+      }
+      mainWindow.title = file + '画图测试';
 });
 
 

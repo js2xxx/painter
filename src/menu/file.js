@@ -7,6 +7,13 @@ function createFileMenu() {
             role: 'fileMenu',
       });
       menu.submenu.append(new MenuItem({
+            label: '新建',
+            accelerator: 'CmdOrCtrl+N',
+            click: function (_event, focusedWindow) {
+                  focusedWindow.webContents.send('action', 'new');
+            }
+      }));
+      menu.submenu.append(new MenuItem({
             label: '打开',
             accelerator: 'CmdOrCtrl+O',
             click: function (_event, focusedWindow) {
@@ -45,6 +52,9 @@ ipcMain.on('save-dialog', (event) => {
 });
 
 ipcMain.on('save-current', (event, currentFile) => {
+      if (currentFile === '') {
+            currentFile = '<新建文件>';
+      }
       event.returnValue = dialog.showMessageBoxSync(BrowserWindow.getFocusedWindow(), {
             type: 'question',
             message: '当前文件 ' + currentFile + ' 需要保存吗？',

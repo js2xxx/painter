@@ -12,8 +12,6 @@ var startX = 0;
 var startY = 0;
 var startAvailable = false;
 
-var changed = new Boolean(false);
-
 function refreshImage() {
       ctx.clearRect(0, 0, paint.width, paint.height);
       var previous = new Image();
@@ -22,8 +20,6 @@ function refreshImage() {
 }
 
 paint.addEventListener('mousedown', (mouse) => {
-      console.log(changed);
-
       startX = mouse.offsetX;
       startY = mouse.offsetY;
       startAvailable = true;
@@ -33,7 +29,7 @@ paint.addEventListener('mousedown', (mouse) => {
 paint.addEventListener('mouseup', (_mouse) => {
       startAvailable = false;
       url = paint.toDataURL();
-      changed = true;
+      window.preload.updateChanged();
 });
 
 paint.addEventListener('mousemove', (mouse) => {
@@ -72,4 +68,4 @@ paint.addEventListener('mousemove', (mouse) => {
       }
 });
 
-window.preload.setActions(changed);
+window.preload.setActions();

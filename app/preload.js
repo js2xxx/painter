@@ -3,15 +3,18 @@ const fs = require('fs');
 
 const prefix = 'data:image/png;base64,';
 
-var currentFile = '';
-var fileChanged;
+var paint;
 
-function updateCurrentFile(file, paint) {
+var currentFile = '';
+var fileChanged = false;
+
+function updateCurrentFile(file) {
+      console.log(fileChanged);
       if (fileChanged) {
             var button = ipcRenderer.sendSync('save-current', currentFile);
             switch (button) {
                   case 0:
-                        saveFile(paint, currentFile === '');
+                        saveFile(currentFile === '');
                         break;
                   case 1:
                         break;
@@ -25,9 +28,9 @@ function updateCurrentFile(file, paint) {
       return true;
 }
 
-function openFile(paint) {
+function openFile() {
       var file = ipcRenderer.sendSync('open-dialog');
-      if (file && updateCurrentFile(file[0], paint)) {
+      if (file && updateCurrentFile(file[0])) {
             fs.readFile(file[0], (err, data) => {
                   if (err) {
                         console.log(err);
@@ -45,7 +48,7 @@ function openFile(paint) {
       }
 }
 
-function saveFile(paint, saveNew) {
+function saveFile(saveNew) {
       var url = paint.toDataURL();
       var base64 = url.substr(prefix.length);
       var buffer = Buffer.from(base64, 'base64');
@@ -60,31 +63,37 @@ function saveFile(paint, saveNew) {
             }
       });
       fileChanged = false;
-      updateCurrentFile(file, paint);
+      updateCurrentFile(file);
 }
 
 contextBridge.exposeInMainWorld('preload', {
-      setActions: function (changed) {
-            fileChanged = changed;
+      setActions: function () {
 
             ipcRenderer.on('action', (event, arg) => {
-                  var paint = document.getElementById('paint');
+                  paint = document.getElementById('paint');
 
                   switch (arg) {
+                        case 'new':
+                              if (updateCurrentFile('')) {
+                                    var ctx = paint.getContext('2d');
+                                    ctx.clearRect(0, 0, paint.width, paint.height);
+                              }
+                              break;
+
                         case 'open':
-                              openFile(paint);
+                              openFile();
                               break;
 
                         case 'save':
-                              saveFile(paint, false);
+                              saveFile(false);
                               break;
 
                         case 'save-as':
-                              saveFile(paint, true);
+                              saveFile(true);
                               break;
 
                         case 'exiting':
-                              if(updateCurrentFile('', paint)) {
+                              if (updateCurrentFile('')) {
                                     ipcRenderer.send('safe-exit');
                               }
                               break;
@@ -92,5 +101,8 @@ contextBridge.exposeInMainWorld('preload', {
                               break;
                   }
             });
+      },
+      updateChanged: function() {
+            fileChanged = true;
       }
 })
