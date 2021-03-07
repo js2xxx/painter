@@ -1,5 +1,7 @@
 const { app, ipcMain } = require('electron');
 
+if (require('electron-squirrel-startup')) return app.quit();
+
 const window = require('./window');
 
 app.on('ready', window.createWindow);

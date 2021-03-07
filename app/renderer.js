@@ -4,6 +4,9 @@ const fnLine = document.getElementById('fnLine');
 const fnRect = document.getElementById('fnRect');
 const fnCircle = document.getElementById('fnCircle');
 
+const colorFore = document.getElementById('colorFore');
+const colorBack = document.getElementById('colorBack');
+
 var paint = document.getElementById('paint');
 var ctx = paint.getContext('2d');
 var url = '';
@@ -34,6 +37,8 @@ paint.addEventListener('mouseup', (_mouse) => {
 
 paint.addEventListener('mousemove', (mouse) => {
       if (startAvailable) {
+            ctx.fillStyle = colorFore.value;
+            ctx.strokeStyle = colorFore.value;
             if (fnStroke.checked) {
                   ctx.beginPath();
                   ctx.moveTo(startX, startY);

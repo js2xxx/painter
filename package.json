@@ -8,7 +8,9 @@
     "run": "node_modules/.bin/electron src/main.js",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "make-mac": "electron-forge make -p darwin",
+    "make-win": "electron-forge make -p win32"
   },
   "keywords": [
     "graphic"
