@@ -4,6 +4,7 @@ const fs = require('fs');
 const prefix = 'data:image/png;base64,';
 
 var paint;
+var fnPosition;
 
 var currentFile = '';
 var fileChanged = false;
@@ -36,13 +37,20 @@ function openFile() {
                         console.log(err);
                   } else {
                         var base64 = data.toString('base64');
-                        var new_url = prefix + base64;
+                        var url = prefix + base64;
 
                         var ctx = paint.getContext('2d');
                         ctx.clearRect(0, 0, paint.width, paint.height);
                         var previous = new Image();
-                        previous.src = new_url;
-                        previous.onload = () => ctx.drawImage(previous, 0, 0);
+                        previous.onload = () => {
+                              paint.width = previous.width;
+                              paint.height = previous.height;
+                              fnPosition.innerText =
+                                    paint.width.toString() + 'x' + paint.height.toString();
+
+                              ctx.drawImage(previous, 0, 0);
+                        };
+                        previous.src = url;
                   }
             });
       }
@@ -68,14 +76,15 @@ function saveFile(saveNew) {
 
 contextBridge.exposeInMainWorld('preload', {
       setActions: function () {
+            paint = document.getElementById('paint');
+            fnPosition = document.getElementById('fnPosition');
 
             ipcRenderer.on('action', (event, arg) => {
-                  paint = document.getElementById('paint');
-
                   switch (arg) {
                         case 'new':
                               if (updateCurrentFile('')) {
                                     var ctx = paint.getContext('2d');
+                                    paint.width = 300, paint.height = 200;
                                     ctx.clearRect(0, 0, paint.width, paint.height);
                               }
                               break;
@@ -102,7 +111,8 @@ contextBridge.exposeInMainWorld('preload', {
                   }
             });
       },
-      updateChanged: function() {
+
+      updateChanged: function () {
             fileChanged = true;
-      }
+      },
 })

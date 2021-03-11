@@ -7,6 +7,8 @@ const fnCircle = document.getElementById('fnCircle');
 const colorFore = document.getElementById('colorFore');
 const colorBack = document.getElementById('colorBack');
 
+const fnPosition = document.getElementById('fnPosition');
+
 var paint = document.getElementById('paint');
 var ctx = paint.getContext('2d');
 var url = '';
@@ -72,5 +74,36 @@ paint.addEventListener('mousemove', (mouse) => {
             }
       }
 });
+
+var tmpStartX = 0, tmpEndX = 0;
+var tmpHeight = 0, tmpEndY = 0;
+var settingSize = false;
+fnPosition.addEventListener('mousedown', (mouse) => {
+      tmpStartX = mouse.offsetX;
+      tmpStartY = mouse.offsetY;
+      url = paint.toDataURL();
+      settingSize = true;
+});
+
+fnPosition.addEventListener('mouseup', (mouse) => {
+      url = paint.toDataURL();
+      settingSize = false;
+})
+
+fnPosition.addEventListener('mousemove', (mouse) => {
+      if (settingSize) {
+            tmpEndX = mouse.offsetX;
+            tmpEndY = mouse.offsetY;
+
+            var deltaWidth = tmpEndX - tmpStartX;
+            var deltaHeight = tmpEndY - tmpStartY;
+
+            paint.width += deltaWidth;
+            paint.height += deltaHeight;
+            refreshImage();
+
+            fnPosition.innerText = paint.width.toString() + 'x' + paint.height.toString();
+      }
+})
 
 window.preload.setActions();

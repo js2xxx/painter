@@ -11,5 +11,5 @@ function createMenu() {
 }
 
 module.exports = {
-      createMenu: createMenu,
+      createMenu,
 }

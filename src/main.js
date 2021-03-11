@@ -18,6 +18,6 @@ app.on('activate', () => {
       }
 });
 
-ipcMain.on('safe-exit', (event) => {
+ipcMain.on('safe-exit', (_event) => {
       app.exit();
 });
