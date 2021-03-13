@@ -33,17 +33,33 @@
                               <label class="btn btn-outline-info" for="fnCircle">圆形</label>
                         </div>
 
-                        <div class="row">
-                              <div class="col input-group input-group-sm">
-                                    <span class="input-group-text" id="descColorFore">前</span>
-                                    <input type="color" class="form-control form-control-color" id="colorFore"
-                                          autocomplete="off" aria-describedby="descColorFore">
+                        <div id="fnShowOptions" style="visibility: hidden">
+                              <div class="row">
+                                    <div class="col-md-auto">
+                                          <input type="checkbox" class="form-check-input" id="fnSetEdge" checked>
+                                          <label class="form-label" for="fnSetEdge">边</label>
+                                    </div>
+                                    <div class="col">
+                                          <input type="range" class="form-range" id="fnSetEdgeThickness" min="1"
+                                                max="400" value="1">
+                                    </div>
+                                    <div class="col-md-auto">
+                                          <span id="fnSetEdgeThicknessValue">1</span>
+                                    </div>
+                                    <div class="col">
+                                          <input type="color" class="form-control form-control-color" id="colorStroke"
+                                                autocomplete="off" value="#000000">
+                                    </div>
                               </div>
-
-                              <div class="col input-group input-group-sm">
-                                    <span class="input-group-text" id="descColorBack">后</span>
-                                    <input type="color" class="form-control form-control-color" id="colorBack"
-                                          autocomplete="off" aria-describedby="descColorBack" value="#FFFFFF">
+                              <div class="row">
+                                    <div class="col-md-auto">
+                                          <input type="checkbox" class="form-check-input" id="fnSetFill">
+                                          <label class="form-label" for="fnSetFill">填充</label>
+                                    </div>
+                                    <div class="col-md">
+                                          <input type="color" class="form-control form-control-color" id="colorFill"
+                                                autocomplete="off" value="#000000" disabled>
+                                    </div>
                               </div>
                         </div>
                   </div>
