@@ -7,6 +7,8 @@ var paint;
 var fnPosition;
 
 var currentFile = '';
+var url = [''];
+var urlIndex = 1;
 var fileChanged = false;
 
 function updateCurrentFile(file) {
@@ -74,12 +76,34 @@ function saveFile(saveNew) {
       updateCurrentFile(file);
 }
 
+function refreshImage() {
+      var ctx = paint.getContext('2d');
+      ctx.clearRect(0, 0, paint.width, paint.height);
+      var previous = new Image();
+      previous.src = getCurrentHistory();
+      ctx.drawImage(previous, 0, 0);
+}
+
+function addHistory(newUrl) {
+      url = url.slice(0, url.length - urlIndex + 1);
+      urlIndex = 1;
+      url.push(newUrl);
+}
+
+function setCurrentHistory(currentUrl) {
+      url[url.length - urlIndex] = currentUrl;
+}
+
+function getCurrentHistory() {
+      return url[url.length - urlIndex];
+}
+
 contextBridge.exposeInMainWorld('preload', {
       setActions: function () {
             paint = document.getElementById('paint');
             fnPosition = document.getElementById('fnPosition');
 
-            ipcRenderer.on('action', (event, arg) => {
+            ipcRenderer.on('action', (_event, arg) => {
                   switch (arg) {
                         case 'new':
                               if (updateCurrentFile('')) {
@@ -106,6 +130,14 @@ contextBridge.exposeInMainWorld('preload', {
                                     ipcRenderer.send('safe-exit');
                               }
                               break;
+
+                        case 'undo':
+                              console.log(url, urlIndex);
+                              if (urlIndex < url.length) {
+                                    urlIndex += 1;
+                                    console.log('undo!');
+                                    refreshImage();
+                              }
                         default:
                               break;
                   }
@@ -115,4 +147,8 @@ contextBridge.exposeInMainWorld('preload', {
       updateChanged: function () {
             fileChanged = true;
       },
+
+      addHistory,
+      refreshImage,
+      setCurrentHistory,
 })

@@ -18,30 +18,24 @@ const fnSetFill = document.getElementById('fnSetFill');
 
 var paint = document.getElementById('paint');
 var ctx = paint.getContext('2d');
-var url = '';
 
 var startX = 0;
 var startY = 0;
 var startAvailable = false;
 
-function refreshImage() {
-      ctx.clearRect(0, 0, paint.width, paint.height);
-      var previous = new Image();
-      previous.src = url;
-      ctx.drawImage(previous, 0, 0);
-}
-
 paint.addEventListener('mousedown', (mouse) => {
       startX = mouse.offsetX;
       startY = mouse.offsetY;
       startAvailable = true;
-      url = paint.toDataURL();
+      window.preload.setCurrentHistory(paint.toDataURL());
 });
 
 paint.addEventListener('mouseup', (_mouse) => {
-      startAvailable = false;
-      url = paint.toDataURL();
-      window.preload.updateChanged();
+      if (startAvailable) {
+            startAvailable = false;
+            window.preload.addHistory(paint.toDataURL());
+            window.preload.updateChanged();
+      }
 });
 
 paint.addEventListener('mousemove', (mouse) => {
@@ -59,7 +53,7 @@ paint.addEventListener('mousemove', (mouse) => {
                   startX = mouse.offsetX;
                   startY = mouse.offsetY;
             } else if (fnLine.checked) {
-                  refreshImage();
+                  window.preload.refreshImage();
 
                   ctx.lineWidth = fnSetEdgeThickness.value;
 
@@ -68,7 +62,7 @@ paint.addEventListener('mousemove', (mouse) => {
                   ctx.lineTo(mouse.offsetX, mouse.offsetY);
                   ctx.stroke();
             } else if (fnRect.checked) {
-                  refreshImage();
+                  window.preload.refreshImage();
 
                   if (fnSetEdge.checked) {
                         ctx.lineWidth = fnSetEdgeThickness.value;
@@ -85,7 +79,7 @@ paint.addEventListener('mousemove', (mouse) => {
                         ctx.fillRect(startX, startY, mouse.offsetX - startX, mouse.offsetY - startY);
                   }
             } else if (fnCircle.checked) {
-                  refreshImage();
+                  window.preload.refreshImage();
 
                   if (fnSetEdge.checked) {
                         ctx.lineWidth = fnSetEdgeThickness.value;
@@ -114,13 +108,16 @@ var settingSize = false;
 fnPosition.addEventListener('mousedown', (mouse) => {
       tmpStartX = mouse.offsetX;
       tmpStartY = mouse.offsetY;
-      url = paint.toDataURL();
+      window.preload.setCurrentHistory(paint.toDataURL());
       settingSize = true;
 });
 
 fnPosition.addEventListener('mouseup', (mouse) => {
-      url = paint.toDataURL();
-      settingSize = false;
+      if (settingSize) {
+            settingSize = false;
+            window.preload.addHistory(paint.toDataURL());
+            window.preload.updateChanged();
+      }
 })
 
 fnPosition.addEventListener('mousemove', (mouse) => {
@@ -133,7 +130,7 @@ fnPosition.addEventListener('mousemove', (mouse) => {
 
             paint.width += deltaWidth;
             paint.height += deltaHeight;
-            refreshImage();
+            window.preload.refreshImage();
 
             fnPosition.innerText = paint.width.toString() + 'x' + paint.height.toString();
       }

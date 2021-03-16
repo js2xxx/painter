@@ -20,6 +20,9 @@
                               <input type="radio" name="fn" id="fnNone" class="btn-check" autocomplete="off" checked>
                               <label class="btn btn-outline-info" for="fnNone">无</label>
 
+                              <input type="radio" name="fn" id="fnSelect" class="btn-check" autocomplete="off">
+                              <label class="btn btn-outline-info" for="fnSelect">选择</label>
+
                               <input type="radio" name="fn" id="fnStroke" class="btn-check" autocomplete="off">
                               <label class="btn btn-outline-info" for="fnStroke">画笔</label>
 
@@ -55,19 +58,19 @@
                                     <input type="checkbox" class="form-check-input" id="fnSetFill">
                                     <label class="form-label" for="fnSetFill">填充</label>
                               </div>
-                              <div class="row">
-                                    <div class="col">
-                                          <input type="color" class="form-control form-control-color" id="colorFill"
-                                                autocomplete="off" value="#000000" disabled>
-                                    </div>
+                              <div>
+                                    <input type="color" class="form-control form-control-color" id="colorFill"
+                                          autocomplete="off" value="#000000" disabled>
                               </div>
                         </div>
                   </div>
             </div>
-            <div class="mx-auto col p-2 vh-100" style="overflow: auto">
+            <div class="mx-auto col p-2 vh-100 overflow-auto">
                   <div class="mx-auto" style="white-space: nowrap">
+                        <div id="selectBox" class="border border-3"
+                              style="border-style: dashed; position: absolute; z-index: 1; visibility: hidden;"></div>
                         <canvas id="paint" width="300" height="200"
-                              style="background-image: url('../assets/tp.png');"></canvas>
+                              style="background-image: url('../assets/tp.png'); z-index: 0;"></canvas>
                         <button id="fnPosition" type="button" class="btn btn-info btn-sm">300x200</button>
                   </div>
             </div>
