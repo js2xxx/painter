@@ -12,7 +12,6 @@ var urlIndex = 1;
 var fileChanged = false;
 
 function updateCurrentFile(file) {
-      console.log(fileChanged);
       if (fileChanged) {
             var button = ipcRenderer.sendSync('save-current', currentFile);
             switch (button) {
@@ -39,7 +38,7 @@ function openFile() {
                         console.log(err);
                   } else {
                         var base64 = data.toString('base64');
-                        var url = prefix + base64;
+                        var newUrl = prefix + base64;
 
                         var ctx = paint.getContext('2d');
                         ctx.clearRect(0, 0, paint.width, paint.height);
@@ -52,7 +51,8 @@ function openFile() {
 
                               ctx.drawImage(previous, 0, 0);
                         };
-                        previous.src = url;
+                        previous.src = newUrl;
+                        url = [newUrl];
                   }
             });
       }
@@ -67,26 +67,31 @@ function saveFile(saveNew) {
       if (saveNew || currentFile === '') {
             file = ipcRenderer.sendSync('save-dialog');
       }
-      fs.writeFile(file, buffer, (error) => {
-            if (error) {
-                  console.log(error)
+      fs.writeFile(file, buffer, (err) => {
+            if (err) {
+                  console.log(err)
             }
       });
       fileChanged = false;
       updateCurrentFile(file);
 }
 
-function refreshImage() {
+function refreshImage(force) {
       var ctx = paint.getContext('2d');
       ctx.clearRect(0, 0, paint.width, paint.height);
-      var previous = new Image();
-      previous.src = getCurrentHistory();
-      ctx.drawImage(previous, 0, 0);
+      var curImage = getCurrentHistory();
+      if (curImage != '') {
+            var previous = document.getElementById('imgCache');
+            previous.onload = () => ctx.drawImage(previous, 0, 0);
+            previous.src = curImage;
+      }
 }
 
 function addHistory(newUrl) {
-      url = url.slice(0, url.length - urlIndex + 1);
-      urlIndex = 1;
+      if (urlIndex > 1) {
+            url = url.slice(0, url.length - urlIndex + 1);
+            urlIndex = 1;
+      }
       url.push(newUrl);
 }
 
@@ -110,6 +115,7 @@ contextBridge.exposeInMainWorld('preload', {
                                     var ctx = paint.getContext('2d');
                                     paint.width = 300, paint.height = 200;
                                     ctx.clearRect(0, 0, paint.width, paint.height);
+                                    url = [''];
                               }
                               break;
 
@@ -132,12 +138,19 @@ contextBridge.exposeInMainWorld('preload', {
                               break;
 
                         case 'undo':
-                              console.log(url, urlIndex);
                               if (urlIndex < url.length) {
                                     urlIndex += 1;
-                                    console.log('undo!');
-                                    refreshImage();
+                                    refreshImage(false);
                               }
+                              break;
+
+                        case 'redo':
+                              if (urlIndex > 1) {
+                                    urlIndex -= 1;
+                                    refreshImage(false);
+                              }
+                              break;
+
                         default:
                               break;
                   }

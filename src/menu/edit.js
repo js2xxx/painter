@@ -12,6 +12,13 @@ function createEditMenu() {
                               click: function (_event, focuesdWindow) {
                                     focuesdWindow.webContents.send('action', 'undo');
                               }
+                        },
+                        {
+                              label: '重做',
+                              accelerator: 'CmdOrCtrl+Y',
+                              click: function (_event, focuesdWindow) {
+                                    focuesdWindow.webContents.send('action', 'redo');
+                              }
                         }
                   ]
             )

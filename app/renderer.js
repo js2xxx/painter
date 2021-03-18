@@ -53,7 +53,7 @@ paint.addEventListener('mousemove', (mouse) => {
                   startX = mouse.offsetX;
                   startY = mouse.offsetY;
             } else if (fnLine.checked) {
-                  window.preload.refreshImage();
+                  window.preload.refreshImage(true);
 
                   ctx.lineWidth = fnSetEdgeThickness.value;
 
@@ -62,7 +62,7 @@ paint.addEventListener('mousemove', (mouse) => {
                   ctx.lineTo(mouse.offsetX, mouse.offsetY);
                   ctx.stroke();
             } else if (fnRect.checked) {
-                  window.preload.refreshImage();
+                  window.preload.refreshImage(true);
 
                   if (fnSetEdge.checked) {
                         ctx.lineWidth = fnSetEdgeThickness.value;
@@ -79,7 +79,7 @@ paint.addEventListener('mousemove', (mouse) => {
                         ctx.fillRect(startX, startY, mouse.offsetX - startX, mouse.offsetY - startY);
                   }
             } else if (fnCircle.checked) {
-                  window.preload.refreshImage();
+                  window.preload.refreshImage(true);
 
                   if (fnSetEdge.checked) {
                         ctx.lineWidth = fnSetEdgeThickness.value;
@@ -130,7 +130,7 @@ fnPosition.addEventListener('mousemove', (mouse) => {
 
             paint.width += deltaWidth;
             paint.height += deltaHeight;
-            window.preload.refreshImage();
+            window.preload.refreshImage(true);
 
             fnPosition.innerText = paint.width.toString() + 'x' + paint.height.toString();
       }
