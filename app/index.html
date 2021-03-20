@@ -18,43 +18,55 @@
                         <h5>功能</h5>
 
                         <div class="btn-group-vertical" role="group" aria-label="Functions">
-                              <input type="radio" name="fn" id="fnNone" class="btn-check" autocomplete="off" checked>
+                              <input type="radio" name="fn" id="fnNone" class="btn-check" autocomplete="off"
+                                    value="none" checked>
                               <label class="btn btn-outline-info" for="fnNone">无</label>
 
-                              <input type="radio" name="fn" id="fnSelect" class="btn-check" autocomplete="off">
+                              <input type="radio" name="fn" id="fnSelect" class="btn-check" autocomplete="off"
+                                    value="select">
                               <label class="btn btn-outline-info" for="fnSelect">选择</label>
 
-                              <input type="radio" name="fn" id="fnStroke" class="btn-check" autocomplete="off">
+                              <input type="radio" name="fn" id="fnStroke" class="btn-check" autocomplete="off"
+                                    value="stroke">
                               <label class="btn btn-outline-info" for="fnStroke">画笔</label>
 
-                              <input type="radio" name="fn" id="fnLine" class="btn-check" autocomplete="off">
+                              <input type="radio" name="fn" id="fnEraser" class="btn-check" autocomplete="off"
+                                    value="eraser">
+                              <label class="btn btn-outline-info" for="fnEraser">橡皮</label>
+
+                              <input type="radio" name="fn" id="fnLine" class="btn-check" autocomplete="off"
+                                    value="line">
                               <label class="btn btn-outline-info" for="fnLine">线段</label>
 
-                              <input type="radio" name="fn" id="fnRect" class="btn-check" autocomplete="off">
+                              <input type="radio" name="fn" id="fnRect" class="btn-check" autocomplete="off"
+                                    value="rect">
                               <label class="btn btn-outline-info" for="fnRect">矩形</label>
 
-                              <input type="radio" name="fn" id="fnCircle" class="btn-check" autocomplete="off">
+                              <input type="radio" name="fn" id="fnCircle" class="btn-check" autocomplete="off"
+                                    value="circle">
                               <label class="btn btn-outline-info" for="fnCircle">圆形</label>
                         </div>
 
-                        <div id="fnShowOptions" style="visibility: hidden">
+                        <div id="fnShowStroke" style="display: none;">
                               <div>
-                                    <input type="checkbox" class="form-check-input" id="fnSetEdge" checked>
-                                    <label class="form-label" for="fnSetEdge">边</label>
+                                    <input type="checkbox" class="form-check-input" id="fnSetStroke" checked>
+                                    <label class="form-label" for="fnSetStroke">边</label>
                               </div>
                               <div class="row">
                                     <div class="col">
-                                          <input type="range" class="form-range" id="fnSetEdgeThickness" min="1"
-                                                max="400" value="1">
+                                          <input type="range" class="form-range" id="fnSetStrokeThickness" min="1"
+                                                max="400" value="3">
                                     </div>
                                     <div class="col-md-auto">
-                                          <span id="fnSetEdgeThicknessValue">1</span>
+                                          <span id="fnSetStrokeThicknessValue">1</span>
                                     </div>
                               </div>
-                              <div>
-                                    <input type="color" class="form-control form-control-color" id="colorStroke"
-                                          autocomplete="off" value="#000000">
-                              </div>
+                        </div>
+                        <div id="fnShowStrokeEx" style="display: none;">
+                              <input type="color" class="form-control form-control-color" id="colorStroke"
+                                    autocomplete="off" value="#000000">
+                        </div>
+                        <div id="fnShowFill" style="display: none;">
                               <div>
                                     <input type="checkbox" class="form-check-input" id="fnSetFill">
                                     <label class="form-label" for="fnSetFill">填充</label>

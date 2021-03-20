@@ -8,10 +8,10 @@ let mainWindow;
 function createWindow() {
       mainWindow = new BrowserWindow({
             width: 800,
-            height: 600,
+            height: 680,
 
             minWidth: 600,
-            minHeight: 600,
+            minHeight: 680,
 
             webPreferences: {
                   preload: path.join(__dirname, '../app/preload.js'),
@@ -36,8 +36,6 @@ ipcMain.on('update-title', (_event, file) => {
       }
       mainWindow.title = file + '画图测试';
 });
-
-
 
 module.exports = {
       createWindow,

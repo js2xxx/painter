@@ -1,19 +1,18 @@
-const fnNone = document.getElementById('fnNone');
-const fnStroke = document.getElementById('fnStroke');
-const fnLine = document.getElementById('fnLine');
-const fnRect = document.getElementById('fnRect');
-const fnCircle = document.getElementById('fnCircle');
+const fnGroup = document.querySelector('div[role="group"]');
+const fnInputs = document.querySelectorAll('input[name="fn"]');
 
 const colorStroke = document.getElementById('colorStroke');
 const colorFill = document.getElementById('colorFill');
 
 const fnPosition = document.getElementById('fnPosition');
 
-const fnShowOptions = document.getElementById('fnShowOptions');
+const fnShowStroke = document.getElementById('fnShowStroke');
+const fnShowStrokeEx = document.getElementById('fnShowStrokeEx');
+const fnShowFill = document.getElementById('fnShowFill');
 
-const fnSetEdge = document.getElementById('fnSetEdge');
-const fnSetEdgeThickness = document.getElementById('fnSetEdgeThickness');
-const fnSetEdgeThicknessValue = document.getElementById('fnSetEdgeThicknessValue');
+const fnSetStroke = document.getElementById('fnSetStroke');
+const fnSetStrokeThickness = document.getElementById('fnSetStrokeThickness');
+const fnSetStrokeThicknessValue = document.getElementById('fnSetStrokeThicknessValue');
 const fnSetFill = document.getElementById('fnSetFill');
 
 var paint = document.getElementById('paint');
@@ -22,6 +21,96 @@ var ctx = paint.getContext('2d');
 var startX = 0;
 var startY = 0;
 var startAvailable = false;
+
+class Drawing {
+      constructor(fn, stroke, strokeEx, fill) {
+            this.fn = fn;
+            this.stroke = stroke;
+            this.strokeEx = strokeEx;
+            this.fill = fill;
+      }
+}
+
+var drawing = {
+      'stroke': new Drawing(function (mouse) {
+            ctx.lineWidth = fnSetStrokeThickness.value;
+            ctx.save();
+            ctx.lineCap = 'round';
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(mouse.offsetX, mouse.offsetY);
+            ctx.stroke();
+
+            ctx.restore();
+            startX = mouse.offsetX;
+            startY = mouse.offsetY;
+      }, true, true, false),
+      'eraser': new Drawing(function (mouse) {
+            ctx.lineWidth = fnSetStrokeThickness.value;
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineCap = 'round';
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(mouse.offsetX, mouse.offsetY);
+            ctx.stroke();
+
+            ctx.restore();
+            startX = mouse.offsetX;
+            startY = mouse.offsetY;
+      }, true, false, false),
+      'line': new Drawing(function (mouse) {
+            window.preload.refreshImage(true);
+
+            ctx.lineWidth = fnSetStrokeThickness.value;
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(mouse.offsetX, mouse.offsetY);
+            ctx.stroke();
+      }, true, true, false),
+      'rect': new Drawing(function (mouse) {
+            window.preload.refreshImage(true);
+
+            if (fnSetStroke.checked) {
+                  ctx.lineWidth = fnSetStrokeThickness.value;
+            } else {
+                  ctx.lineWidth = 0;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            if (fnSetStroke.checked) {
+                  ctx.strokeRect(startX, startY, mouse.offsetX - startX, mouse.offsetY - startY);
+            }
+            if (fnSetFill.checked) {
+                  ctx.fillRect(startX, startY, mouse.offsetX - startX, mouse.offsetY - startY);
+            }
+      }, true, true, true),
+      'circle': new Drawing(function (mouse) {
+            window.preload.refreshImage(true);
+
+            if (fnSetStroke.checked) {
+                  ctx.lineWidth = fnSetStrokeThickness.value;
+            } else {
+                  ctx.lineWidth = 0;
+            }
+
+            ctx.beginPath();
+            var rx = (mouse.offsetX - startX) / 2;
+            var ry = (mouse.offsetY - startY) / 2;
+            var r = Math.sqrt(rx * rx + ry * ry);
+            ctx.arc(rx + startX, ry + startY, r, 0, Math.PI * 2);
+            if (fnSetStroke.checked) {
+                  ctx.stroke();
+            }
+            if (fnSetFill.checked) {
+                  ctx.fill();
+            }
+      }, true, true, true),
+};
 
 paint.addEventListener('mousedown', (mouse) => {
       startX = mouse.offsetX;
@@ -42,62 +131,9 @@ paint.addEventListener('mousemove', (mouse) => {
       if (startAvailable) {
             ctx.fillStyle = colorFill.value;
             ctx.strokeStyle = colorStroke.value;
-            if (fnStroke.checked) {
-                  ctx.lineWidth = fnSetEdgeThickness.value;
-
-                  ctx.beginPath();
-                  ctx.moveTo(startX, startY);
-                  ctx.lineTo(mouse.offsetX, mouse.offsetY);
-                  ctx.stroke();
-
-                  startX = mouse.offsetX;
-                  startY = mouse.offsetY;
-            } else if (fnLine.checked) {
-                  window.preload.refreshImage(true);
-
-                  ctx.lineWidth = fnSetEdgeThickness.value;
-
-                  ctx.beginPath();
-                  ctx.moveTo(startX, startY);
-                  ctx.lineTo(mouse.offsetX, mouse.offsetY);
-                  ctx.stroke();
-            } else if (fnRect.checked) {
-                  window.preload.refreshImage(true);
-
-                  if (fnSetEdge.checked) {
-                        ctx.lineWidth = fnSetEdgeThickness.value;
-                  } else {
-                        ctx.lineWidth = 0;
-                  }
-
-                  ctx.beginPath();
-                  ctx.moveTo(startX, startY);
-                  if (fnSetEdge.checked) {
-                        ctx.strokeRect(startX, startY, mouse.offsetX - startX, mouse.offsetY - startY);
-                  }
-                  if (fnSetFill.checked) {
-                        ctx.fillRect(startX, startY, mouse.offsetX - startX, mouse.offsetY - startY);
-                  }
-            } else if (fnCircle.checked) {
-                  window.preload.refreshImage(true);
-
-                  if (fnSetEdge.checked) {
-                        ctx.lineWidth = fnSetEdgeThickness.value;
-                  } else {
-                        ctx.lineWidth = 0;
-                  }
-
-                  ctx.beginPath();
-                  var rx = (mouse.offsetX - startX) / 2;
-                  var ry = (mouse.offsetY - startY) / 2;
-                  var r = Math.sqrt(rx * rx + ry * ry);
-                  ctx.arc(rx + startX, ry + startY, r, 0, Math.PI * 2);
-                  if (fnSetEdge.checked) {
-                        ctx.stroke();
-                  }
-                  if (fnSetFill.checked) {
-                        ctx.fill();
-                  }
+            var fn = fnGroup.querySelector('input[type="radio"]:checked').value;
+            if (drawing[fn]) {
+                  drawing[fn].fn(mouse);
             }
       }
 });
@@ -118,7 +154,7 @@ fnPosition.addEventListener('mouseup', (mouse) => {
             window.preload.addHistory(paint.toDataURL());
             window.preload.updateChanged();
       }
-})
+});
 
 fnPosition.addEventListener('mousemove', (mouse) => {
       if (settingSize) {
@@ -134,48 +170,32 @@ fnPosition.addEventListener('mousemove', (mouse) => {
 
             fnPosition.innerText = paint.width.toString() + 'x' + paint.height.toString();
       }
-})
-
-fnNone.addEventListener('change', (_e) => {
-      fnShowOptions.style.visibility = fnNone.checked ? 'hidden' : 'visible';
-})
-
-fnStroke.addEventListener('change', (_e) => {
-      fnShowOptions.style.visibility = fnNone.checked ? 'hidden' : 'visible';
-      if (fnStroke.checked) {
-            fnSetEdge.checked = true;
-            fnSetFill.checked = false;
-      }
-      fnSetEdge.disabled = fnStroke.checked;
-      fnSetFill.disabled = fnStroke.checked;
 });
 
-fnLine.addEventListener('change', (_e) => {
-      fnShowOptions.style.visibility = fnNone.checked ? 'hidden' : 'visible';
-      if (fnLine.checked) {
-            fnSetEdge.checked = true;
-            fnSetFill.checked = false;
-      }
-      fnSetEdge.disabled = fnLine.checked;
-      fnSetFill.disabled = fnStroke.checked;
+fnInputs.forEach((value, _key, _parent) => {
+      value.addEventListener('change', (event) => {
+            console.log(event.target.value);
+            if (drawing[event.target.value]) {
+                  fnShowStroke.style.display = drawing[event.target.value].stroke ? 'inline' : 'none';
+                  fnShowStrokeEx.style.display = drawing[event.target.value].strokeEx ? 'inline' : 'none';
+                  fnShowFill.style.display = drawing[event.target.value].fill ? 'inline' : 'none';
+            } else {
+                  fnShowStroke.style.display = fnShowStrokeEx.style.display =
+                        fnShowFill.style.display = 'none';
+            }
+      })
 });
 
-fnRect.addEventListener('change', (_e) => {
-      fnShowOptions.style.visibility = fnNone.checked ? 'hidden' : 'visible';
-      fnSetEdge.disabled = fnSetFill.disabled = false;
+fnSetStroke.addEventListener('change', (_e) => {
+      colorStroke.disabled = fnSetStrokeThickness.disabled = !fnSetStroke.checked;
 });
 
-fnCircle.addEventListener('change', (_e) => {
-      fnShowOptions.style.visibility = fnNone.checked ? 'hidden' : 'visible';
-      fnSetEdge.disabled = fnSetFill.disabled = false;
+fnSetStrokeThickness.addEventListener('mousemove', (_ev) => {
+      fnSetStrokeThicknessValue.innerText = fnSetStrokeThickness.value;
 });
 
-fnSetEdge.addEventListener('change', (_e) => {
-      colorStroke.disabled = fnSetEdgeThickness.disabled = !fnSetEdge.checked;
-});
-
-fnSetEdgeThickness.addEventListener('mousemove', (_ev) => {
-      fnSetEdgeThicknessValue.innerText = fnSetEdgeThickness.value;
+fnSetStrokeThickness.addEventListener('mousedown', (_ev) => {
+      fnSetStrokeThicknessValue.innerText = fnSetStrokeThickness.value;
 });
 
 fnSetFill.addEventListener('change', (_e) => {
