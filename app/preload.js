@@ -76,7 +76,7 @@ function saveFile(saveNew) {
       updateCurrentFile(file);
 }
 
-function refreshImage(force) {
+function refreshImage() {
       var ctx = paint.getContext('2d');
       ctx.clearRect(0, 0, paint.width, paint.height);
       var curImage = getCurrentHistory();
