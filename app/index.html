@@ -17,6 +17,23 @@
                         <h1 class="display-3">画图</h1>
                         <h5>功能</h5>
 
+
+                        <div class="row">
+                              <div class="col-md-auto">
+                                    <span>缩放：</span>
+                              </div>
+                              <div class="col">
+                                    <input type="range" class="form-range" id="paintScale" min="1" max="400"
+                                          value="100">
+                              </div>
+                              <div class="col-md-auto">
+                                    <p><span id="paintScaleValue">100</span>
+                                          %</p>
+                              </div>
+                        </div>
+                        <button class="btn btn-outline-info" type="button" id="paintScaleReset"
+                              style="display: none;">重置</button>
+
                         <div class="btn-group-vertical" role="group" aria-label="Functions">
                               <input type="radio" name="fn" id="fnNone" class="btn-check" autocomplete="off"
                                     value="none" checked>
@@ -45,6 +62,14 @@
                               <input type="radio" name="fn" id="fnCircle" class="btn-check" autocomplete="off"
                                     value="circle">
                               <label class="btn btn-outline-info" for="fnCircle">圆形</label>
+
+                              <input type="radio" name="fn" id="fnFill" class="btn-check" autocomplete="off"
+                                    value="fill">
+                              <label class="btn btn-outline-info" for="fnFill">填充</label>
+
+                              <input type="radio" name="fn" id="fnText" class="btn-check" autocomplete="off"
+                                    value="text">
+                              <label class="btn btn-outline-info" for="fnText">文本</label>
                         </div>
 
                         <div id="fnShowStroke" style="display: none;">
@@ -76,15 +101,29 @@
                                           autocomplete="off" value="#000000" disabled>
                               </div>
                         </div>
+                        <div id="fnShowText" style="display: none;">
+                              <div class="mb-3">
+                                    <label for="fnSetFontSize">字体大小</label>
+                                    <input type="text" spellcheck="false" class="form-control" id="fnSetFontSize"
+                                          value="10px" autocomplete="off">
+                              </div>
+                        </div>
                   </div>
             </div>
             <div class="mx-auto col p-2 vh-100 overflow-auto">
                   <div class="mx-auto" style="white-space: nowrap">
-                        <div id="selectBox" class="border border-3"
-                              style="border-style: dashed; position: absolute; z-index: 1; visibility: hidden;"></div>
-                        <canvas id="paint" width="300" height="200"
-                              style="background-image: url('../assets/tp.png'); z-index: 0;"></canvas>
-                        <button id="fnPosition" type="button" class="btn btn-info btn-sm">300x200</button>
+                        <div id="paintContainer">
+                              <!-- <div id="selectBox" class="border border-3"
+                              style="border-style: dashed; position: absolute; z-index: 1; visibility: hidden;"></div> -->
+                              <div id="textBox" class="border border-3"
+                                    style="border-style: dashed; position: absolute; z-index: 1; display: none;">
+                                    <input type="text" id="textPreview"
+                                          style="background-color: transparent; border-width: 0px;">
+                              </div>
+                              <canvas id="paint" width="300" height="200"
+                                    style="background-image: url('../assets/tp.png'); z-index: 0;"></canvas>
+                              <button id="fnPosition" type="button" class="btn btn-info btn-sm">300x200</button>
+                        </div>
                   </div>
             </div>
       </div>
