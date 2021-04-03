@@ -1,3 +1,5 @@
+//#region DOM elements except PAINT
+
 const fnGroup = document.querySelector('div[role="group"]');
 const fnInputs = document.querySelectorAll('input[name="fn"]');
 
@@ -29,6 +31,10 @@ const selectBox = document.getElementById('selectBox');
 const paintSelectReset = document.getElementById('paintSelectReset');
 const paintSelectCancel = document.getElementById('paintSelectCancel');
 
+//#endregion
+
+//#region Global variables
+
 var paint = document.getElementById('paint');
 var ctx = paint.getContext('2d');
 
@@ -40,6 +46,10 @@ var paintSelected = false;
 var selection = null;
 var selectionX = -1, selectionY = -1, selectionW = -1, selectionH = -1;
 var moved = false;
+
+//#endregion
+
+//#region Drawing class & functions
 
 class Drawing {
       constructor(fn, stroke, strokeEx, fill) {
@@ -149,6 +159,10 @@ var drawing = {
       'fill': new Drawing(null, false, false, true),
 };
 
+//#endregion
+
+//#region Utility functions
+
 function updateTextStyle() {
       textBox.style.color = fnSetFill.checked ? colorFill.value : colorStroke.value;
       textBox.style.fontSize = fnSetFontSize.value;
@@ -162,37 +176,37 @@ function updatePaintScale() {
       paintContainer.style.transform = 'scale(' + scale + ')';
 }
 
-function getIndex(image, x, y) {
-      return (y * image.width + x) * 4;
-}
-
-function colorHexToRGB(hex) {
-      const reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
-
-      var sColor = hex.toLowerCase();
-      var sColorChange = [];
-      if (sColor && reg.test(sColor)) {
-            if (sColor.length === 4) {
-                  var sColorNew = "#";
-                  for (var i = 1; i < 4; i += 1) {
-                        sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1));
-                  }
-                  sColor = sColorNew;
-            }
-
-            for (var i = 1; i < 7; i += 2) {
-                  sColorChange.push(parseInt("0x" + sColor.slice(i, i + 2)));
-            }
-      }
-      return sColorChange;
-}
-
 function fillWithColor(startX, startY, color, alpha) {
       function isValid(image, cx, cy, oldColor) {
             var currentColor = image.data.subarray(getIndex(image, cx, cy),
                   getIndex(image, cx, cy) + 4);
             return currentColor[0] == oldColor[0] && currentColor[1] == oldColor[1]
                   && currentColor[2] == oldColor[2] && currentColor[3] == oldColor[3];
+      }
+
+      function getIndex(image, x, y) {
+            return (y * image.width + x) * 4;
+      }
+
+      function colorHexToRGB(hex) {
+            const reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+      
+            var sColor = hex.toLowerCase();
+            var sColorChange = [];
+            if (sColor && reg.test(sColor)) {
+                  if (sColor.length === 4) {
+                        var sColorNew = "#";
+                        for (var i = 1; i < 4; i += 1) {
+                              sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1));
+                        }
+                        sColor = sColorNew;
+                  }
+      
+                  for (var i = 1; i < 7; i += 2) {
+                        sColorChange.push(parseInt("0x" + sColor.slice(i, i + 2)));
+                  }
+            }
+            return sColorChange;
       }
 
       var image = ctx.getImageData(0, 0, paint.width, paint.height);
@@ -223,6 +237,20 @@ function fillWithColor(startX, startY, color, alpha) {
       ctx.putImageData(image, 0, 0);
 }
 
+function resetSelection() {
+      paintSelected = false;
+      paintSelectReset.style.display = 'none';
+      paintSelectReset.innerText = '删除区域';
+      paintSelectCancel.style.display = 'none';
+      selectBox.style.display = 'none';
+      selection = null;
+      selectionX = selectionY = selectionW = selectionH = -1;
+}
+
+//#endregion
+
+//#region Event handlers: texting
+
 textPreview.addEventListener('keydown', (event) => {
       if (event.code === 'Enter') {
             ctx.lineWidth = fnSetStrokeThickness.value;
@@ -242,6 +270,10 @@ textPreview.addEventListener('keydown', (event) => {
             textBox.style.display = 'none';
       }
 });
+
+//#endregion
+
+//#region Event handlers: general painting
 
 paint.addEventListener('click', (mouse) => {
       var fn = fnGroup.querySelector('input[type="radio"]:checked').value;
@@ -308,6 +340,10 @@ paint.addEventListener('mousemove', (mouse) => {
       }
 });
 
+//#endregion
+
+//#region Event handlers: sizing
+
 var tmpStartX = 0, tmpEndX = 0;
 var tmpHeight = 0, tmpEndY = 0;
 var settingSize = false;
@@ -318,7 +354,7 @@ fnPosition.addEventListener('mousedown', (mouse) => {
       settingSize = true;
 });
 
-fnPosition.addEventListener('mouseup', (mouse) => {
+fnPosition.addEventListener('mouseup', (_mouse) => {
       if (settingSize) {
             settingSize = false;
             window.preload.addHistory(paint.toDataURL());
@@ -341,6 +377,10 @@ fnPosition.addEventListener('mousemove', (mouse) => {
             fnPosition.innerText = paint.width.toString() + 'x' + paint.height.toString();
       }
 });
+
+//#endregion
+
+//#region Event handlers: controlling visibility of UI controls
 
 fnInputs.forEach((value, _key, _parent) => {
       value.addEventListener('change', (event) => {
@@ -373,6 +413,10 @@ fnSetFill.addEventListener('change', (_e) => {
       colorFill.disabled = !fnSetFill.checked;
 });
 
+//#endregion
+
+//#region Event handlers: setting styles & scaling
+
 colorFill.addEventListener('change', (_e) => updateTextStyle());
 colorStroke.addEventListener('change', (_e) => updateTextStyle());
 fnSetFontSize.addEventListener('change', (_e) => updateTextStyle());
@@ -384,6 +428,10 @@ paintScaleReset.addEventListener('click', (_e) => {
       paintScale.value = 100;
       updatePaintScale();
 });
+
+//#endregion
+
+//#region Event handlers: moving & erasing the selection
 
 selectBox.addEventListener('mousedown', (mouse) => {
       startX = mouse.offsetX;
@@ -421,16 +469,6 @@ selectBox.addEventListener('mouseup', (_mouse) => {
       }
 });
 
-function resetSelection() {
-      paintSelected = false;
-      paintSelectReset.style.display = 'none';
-      paintSelectReset.innerText = '删除区域';
-      paintSelectCancel.style.display = 'none';
-      selectBox.style.display = 'none';
-      selection = null;
-      selectionX = selectionY = selectionW = selectionH = -1;
-}
-
 paintSelectCancel.addEventListener('click', (_e) => {
       window.preload.refreshImage();
       resetSelection();
@@ -443,5 +481,7 @@ paintSelectReset.addEventListener('click', (_e) => {
 
       resetSelection();
 });
+
+//#endregion
 
 window.preload.setActions();
