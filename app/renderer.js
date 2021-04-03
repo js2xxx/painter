@@ -25,12 +25,21 @@ const paintScale = document.getElementById('paintScale');
 const paintScaleValue = document.getElementById('paintScaleValue');
 const paintScaleReset = document.getElementById('paintScaleReset');
 
+const selectBox = document.getElementById('selectBox');
+const paintSelectReset = document.getElementById('paintSelectReset');
+const paintSelectCancel = document.getElementById('paintSelectCancel');
+
 var paint = document.getElementById('paint');
 var ctx = paint.getContext('2d');
 
 var startX = 0;
 var startY = 0;
 var startAvailable = false;
+
+var paintSelected = false;
+var selection = null;
+var selectionX = -1, selectionY = -1, selectionW = -1, selectionH = -1;
+var moved = false;
 
 class Drawing {
       constructor(fn, stroke, strokeEx, fill) {
@@ -42,6 +51,16 @@ class Drawing {
 }
 
 var drawing = {
+      'select': new Drawing(function (mouse) {
+            if (!paintSelected) {
+                  selectBox.style.display = 'inline';
+                  selectBox.style.left = startX + 'px';
+                  selectBox.style.top = startY + 'px';
+                  selectBox.style.width = mouse.offsetX - startX + 'px';
+                  selectBox.style.height = mouse.offsetY - startY + 'px';
+            }
+      }, false, false, false),
+
       'stroke': new Drawing(function (mouse) {
             ctx.lineWidth = fnSetStrokeThickness.value;
             ctx.save();
@@ -74,7 +93,7 @@ var drawing = {
       }, true, false, false),
 
       'line': new Drawing(function (mouse) {
-            window.preload.refreshImage(true);
+            window.preload.refreshImage();
 
             ctx.lineWidth = fnSetStrokeThickness.value;
 
@@ -85,7 +104,7 @@ var drawing = {
       }, true, true, false),
 
       'rect': new Drawing(function (mouse) {
-            window.preload.refreshImage(true);
+            window.preload.refreshImage();
 
             if (fnSetStroke.checked) {
                   ctx.lineWidth = fnSetStrokeThickness.value;
@@ -104,7 +123,7 @@ var drawing = {
       }, true, true, true),
 
       'circle': new Drawing(function (mouse) {
-            window.preload.refreshImage(true);
+            window.preload.refreshImage();
 
             if (fnSetStroke.checked) {
                   ctx.lineWidth = fnSetStrokeThickness.value;
@@ -215,10 +234,10 @@ textPreview.addEventListener('keydown', (event) => {
             var top = Number(textBox.style.top.slice(0, textBox.style.top.length - 2));
             var fw = Number(fnSetFontSize.value.slice(0, fnSetFontSize.value.length - 2));
             if (fnSetFill.checked) {
-                  ctx.fillText(textPreview.value, left - 258, top + fw - 8);
+                  ctx.fillText(textPreview.value, left, top + fw);
             }
             if (fnSetStroke.checked) {
-                  ctx.strokeText(textPreview.value, left - 258, top + fw - 8);
+                  ctx.strokeText(textPreview.value, left, top + fw);
             }
             textBox.style.display = 'none';
       }
@@ -227,8 +246,9 @@ textPreview.addEventListener('keydown', (event) => {
 paint.addEventListener('click', (mouse) => {
       var fn = fnGroup.querySelector('input[type="radio"]:checked').value;
       switch (fn) {
-            case 'text': textBox.style.left = mouse.offsetX + 258 + 'px';
-                  textBox.style.top = mouse.offsetY + 8 + 'px';
+            case 'text':
+                  textBox.style.left = mouse.offsetX + 'px';
+                  textBox.style.top = mouse.offsetY + 'px';
                   textBox.style.display = 'inline';
                   textPreview.value = '';
                   textPreview.focus();
@@ -245,6 +265,7 @@ paint.addEventListener('mousedown', (mouse) => {
       startX = mouse.offsetX;
       startY = mouse.offsetY;
       startAvailable = true;
+
       window.preload.setCurrentHistory(paint.toDataURL());
 });
 
@@ -253,6 +274,26 @@ paint.addEventListener('mouseup', (_mouse) => {
             startAvailable = false;
             window.preload.addHistory(paint.toDataURL());
             window.preload.updateChanged();
+      }
+
+      var fn = fnGroup.querySelector('input[type="radio"]:checked').value;
+      switch (fn) {
+            case 'select':
+                  if (!paintSelected) {
+                        paintSelected = true;
+
+                        paintSelectReset.style.display = 'inline';
+                        paintSelectCancel.style.display = 'inline';
+
+                        selectionX = selectBox.offsetLeft;
+                        selectionY = selectBox.offsetTop;
+                        selectionW = selectBox.clientWidth;
+                        selectionH = selectBox.clientHeight;
+
+                        selection = ctx.getImageData(selectionX, selectionY,
+                              selectionW, selectionH);
+                  }
+                  break;
       }
 });
 
@@ -295,7 +336,7 @@ fnPosition.addEventListener('mousemove', (mouse) => {
 
             paint.width += deltaWidth;
             paint.height += deltaHeight;
-            window.preload.refreshImage(true);
+            window.preload.refreshImage();
 
             fnPosition.innerText = paint.width.toString() + 'x' + paint.height.toString();
       }
@@ -342,6 +383,65 @@ paintScale.addEventListener('change', (_e) => updatePaintScale());
 paintScaleReset.addEventListener('click', (_e) => {
       paintScale.value = 100;
       updatePaintScale();
+});
+
+selectBox.addEventListener('mousedown', (mouse) => {
+      startX = mouse.offsetX;
+      startY = mouse.offsetY;
+      startAvailable = true;
+});
+
+selectBox.addEventListener('mousemove', (mouse) => {
+      if (startAvailable) {
+            window.preload.refreshImage();
+            var newLeft = selectBox.offsetLeft + mouse.offsetX - startX;
+            var newTop = selectBox.offsetTop + mouse.offsetY - startY;
+
+            selectBox.style.left = newLeft + 'px';
+            selectBox.style.top = newTop + 'px';
+
+            if (selection != null) {
+                  ctx.clearRect(selectionX, selectionY, selectionW, selectionH);
+                  ctx.putImageData(selection, newLeft, newTop);
+                  moved = true;
+            }
+      }
+});
+
+selectBox.addEventListener('mouseup', (_mouse) => {
+      if (startAvailable) {
+            startAvailable = false;
+            if (selection != null) {
+                  ctx.clearRect(selectionX, selectionY, selectionW, selectionH);
+            }
+      }
+      if (moved) {
+            paintSelectReset.innerText = '确定';
+            moved = false;
+      }
+});
+
+function resetSelection() {
+      paintSelected = false;
+      paintSelectReset.style.display = 'none';
+      paintSelectReset.innerText = '删除区域';
+      paintSelectCancel.style.display = 'none';
+      selectBox.style.display = 'none';
+      selection = null;
+      selectionX = selectionY = selectionW = selectionH = -1;
+}
+
+paintSelectCancel.addEventListener('click', (_e) => {
+      window.preload.refreshImage();
+      resetSelection();
+});
+
+paintSelectReset.addEventListener('click', (_e) => {
+      ctx.clearRect(selectionX, selectionY, selectionW, selectionH);
+      window.preload.addHistory(paint.toDataURL());
+      window.preload.updateChanged();
+
+      resetSelection();
 });
 
 window.preload.setActions();

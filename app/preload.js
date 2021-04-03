@@ -42,16 +42,16 @@ function openFile() {
 
                         var ctx = paint.getContext('2d');
                         ctx.clearRect(0, 0, paint.width, paint.height);
-                        var previous = new Image();
-                        previous.onload = () => {
-                              paint.width = previous.width;
-                              paint.height = previous.height;
+                        var imgCache = new Image();
+                        imgCache.onload = () => {
+                              paint.width = imgCache.width;
+                              paint.height = imgCache.height;
                               fnPosition.innerText =
                                     paint.width.toString() + 'x' + paint.height.toString();
 
-                              ctx.drawImage(previous, 0, 0);
+                              ctx.drawImage(imgCache, 0, 0);
                         };
-                        previous.src = newUrl;
+                        imgCache.src = newUrl;
                         url = [newUrl];
                   }
             });
@@ -81,9 +81,9 @@ function refreshImage() {
       ctx.clearRect(0, 0, paint.width, paint.height);
       var curImage = getCurrentHistory();
       if (curImage != '') {
-            var previous = document.getElementById('imgCache');
-            previous.onload = () => ctx.drawImage(previous, 0, 0);
-            previous.src = curImage;
+            var imgCache = document.getElementById('imgCache');
+            imgCache.onload = () => ctx.drawImage(imgCache, 0, 0);
+            imgCache.src = curImage;
       }
 }
 

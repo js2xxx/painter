@@ -10,10 +10,10 @@
 </head>
 
 <body class="mx-auto vh-100">
-      <img id="imgCache" src="" style="display: none;" decoding="sync">
+      <img id="imgCache" src="" style="display: none;" decoding="sync" loading="eager">
       <div class="mx-auto vh-100 text-white bg-secondary row g-0">
-            <div class="col-sm-3 vh-100 bg-dark">
-                  <div class="d-grid gap-2 p-4 g-5">
+            <div id="sideBar" class="col-sm-3 vh-100 bg-dark overflow-auto">
+                  <div class="d-grid gap-2 p-4 g-5" style="white-space: nowrap;">
                         <h1 class="display-3">画图</h1>
                         <h5>功能</h5>
 
@@ -30,45 +30,50 @@
                                           %</p>
                               </div>
                         </div>
-                        <button class="btn btn-outline-info" type="button" id="paintScaleReset"
-                              style="display: none;">重置</button>
-
+                        <div class="btn-group-vertical">
+                              <button class="btn btn-outline-primary" type="button" id="paintScaleReset"
+                                    style="display: none;">重置缩放</button>
+                              <button class="btn btn-outline-primary" type="button" id="paintSelectReset"
+                                    style="display: none;">删除区域</button>
+                              <button class="btn btn-outline-primary" type="button" id="paintSelectCancel"
+                                    style="display: none;">取消</button>
+                        </div>
                         <div class="btn-group-vertical" role="group" aria-label="Functions">
                               <input type="radio" name="fn" id="fnNone" class="btn-check" autocomplete="off"
                                     value="none" checked>
-                              <label class="btn btn-outline-info" for="fnNone">无</label>
+                              <label class="btn btn-outline-primary" for="fnNone">无</label>
 
                               <input type="radio" name="fn" id="fnSelect" class="btn-check" autocomplete="off"
                                     value="select">
-                              <label class="btn btn-outline-info" for="fnSelect">选择</label>
+                              <label class="btn btn-outline-primary" for="fnSelect">选择</label>
 
                               <input type="radio" name="fn" id="fnStroke" class="btn-check" autocomplete="off"
                                     value="stroke">
-                              <label class="btn btn-outline-info" for="fnStroke">画笔</label>
+                              <label class="btn btn-outline-primary" for="fnStroke">画笔</label>
 
                               <input type="radio" name="fn" id="fnEraser" class="btn-check" autocomplete="off"
                                     value="eraser">
-                              <label class="btn btn-outline-info" for="fnEraser">橡皮</label>
+                              <label class="btn btn-outline-primary" for="fnEraser">橡皮</label>
 
                               <input type="radio" name="fn" id="fnLine" class="btn-check" autocomplete="off"
                                     value="line">
-                              <label class="btn btn-outline-info" for="fnLine">线段</label>
+                              <label class="btn btn-outline-primary" for="fnLine">线段</label>
 
                               <input type="radio" name="fn" id="fnRect" class="btn-check" autocomplete="off"
                                     value="rect">
-                              <label class="btn btn-outline-info" for="fnRect">矩形</label>
+                              <label class="btn btn-outline-primary" for="fnRect">矩形</label>
 
                               <input type="radio" name="fn" id="fnCircle" class="btn-check" autocomplete="off"
                                     value="circle">
-                              <label class="btn btn-outline-info" for="fnCircle">圆形</label>
+                              <label class="btn btn-outline-primary" for="fnCircle">圆形</label>
 
                               <input type="radio" name="fn" id="fnFill" class="btn-check" autocomplete="off"
                                     value="fill">
-                              <label class="btn btn-outline-info" for="fnFill">填充</label>
+                              <label class="btn btn-outline-primary" for="fnFill">填充</label>
 
                               <input type="radio" name="fn" id="fnText" class="btn-check" autocomplete="off"
                                     value="text">
-                              <label class="btn btn-outline-info" for="fnText">文本</label>
+                              <label class="btn btn-outline-primary" for="fnText">文本</label>
                         </div>
 
                         <div id="fnShowStroke" style="display: none;">
@@ -109,23 +114,23 @@
                         </div>
                   </div>
             </div>
+
             <div class="mx-auto col p-2 vh-100 overflow-auto">
-                  <div class="mx-auto" style="white-space: nowrap">
-                        <div id="paintContainer">
-                              <!-- <div id="selectBox" class="border border-3"
-                              style="border-style: dashed; position: absolute; z-index: 1; visibility: hidden;"></div> -->
-                              <div id="textBox" class="border border-3"
-                                    style="border-style: dashed; position: absolute; z-index: 1; display: none;">
-                                    <input type="text" id="textPreview"
-                                          style="background-color: transparent; border-width: 0px;">
-                              </div>
-                              <canvas id="paint" width="300" height="200"
-                                    style="background-image: url('../assets/tp.png'); z-index: 0;"></canvas>
-                              <button id="fnPosition" type="button" class="btn btn-info btn-sm">300x200</button>
+                  <div id="paintContainer" class="mx-auto" style="white-space: nowrap; position: relative;">
+                        <div id="selectBox" class="border border-3"
+                              style="border-style: dashed; position: absolute; z-index: 1; display: none;"></div>
+                        <div id="textBox" class="border border-3"
+                              style="border-style: dashed; position: absolute; z-index: 1; display: none;">
+                              <input type="text" id="textPreview"
+                                    style="background-color: transparent; border-width: 0px;">
                         </div>
+                        <canvas id="paint" width="300" height="200"
+                              style="background-image: url('../assets/tp.png'); z-index: 0;"></canvas>
+                        <button id="fnPosition" type="button" class="btn btn-primary btn-sm">300x200</button>
                   </div>
             </div>
       </div>
+
       <script src="./renderer.js" type="text/javascript"></script>
       <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js" type="text/javascript"></script>
 </body>
