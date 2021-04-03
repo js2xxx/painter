@@ -1,0 +1,1 @@
+# An example of painter written with Electron

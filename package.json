@@ -1,7 +1,7 @@
 {
   "name": "painter",
   "version": "0.1.0",
-  "description": "A test painter app",
+  "description": "An example of painter written with Electron",
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -15,8 +15,8 @@
   "keywords": [
     "graphic"
   ],
-  "author": "Xu Qihang",
-  "license": "ISC",
+  "author": "Js2xxx",
+  "license": "MIT",
   "dependencies": {
     "bmp-js": "^0.1.0",
     "bootstrap": "^5.0.0-beta2",
