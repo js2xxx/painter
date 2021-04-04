@@ -190,7 +190,7 @@ function fillWithColor(startX, startY, color, alpha) {
 
       function colorHexToRGB(hex) {
             const reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
-      
+
             var sColor = hex.toLowerCase();
             var sColorChange = [];
             if (sColor && reg.test(sColor)) {
@@ -201,7 +201,7 @@ function fillWithColor(startX, startY, color, alpha) {
                         }
                         sColor = sColorNew;
                   }
-      
+
                   for (var i = 1; i < 7; i += 2) {
                         sColorChange.push(parseInt("0x" + sColor.slice(i, i + 2)));
                   }
@@ -298,13 +298,15 @@ paint.addEventListener('mousedown', (mouse) => {
       startY = mouse.offsetY;
       startAvailable = true;
 
-      window.preload.setCurrentHistory(paint.toDataURL());
+      window.preload.setCurrentHistory(paint.toDataURL(),
+            ctx.getImageData(0, 0, paint.width, paint.height), paint.width, paint.height);
 });
 
 paint.addEventListener('mouseup', (_mouse) => {
       if (startAvailable) {
             startAvailable = false;
-            window.preload.addHistory(paint.toDataURL());
+            window.preload.addHistory(paint.toDataURL(),
+                  ctx.getImageData(0, 0, paint.width, paint.height), paint.width, paint.height);
             window.preload.updateChanged();
       }
 
@@ -350,14 +352,16 @@ var settingSize = false;
 fnPosition.addEventListener('mousedown', (mouse) => {
       tmpStartX = mouse.offsetX;
       tmpStartY = mouse.offsetY;
-      window.preload.setCurrentHistory(paint.toDataURL());
+      window.preload.setCurrentHistory(paint.toDataURL(),
+            ctx.getImageData(0, 0, paint.width, paint.height), paint.width, paint.height);
       settingSize = true;
 });
 
 fnPosition.addEventListener('mouseup', (_mouse) => {
       if (settingSize) {
             settingSize = false;
-            window.preload.addHistory(paint.toDataURL());
+            window.preload.addHistory(paint.toDataURL(),
+                  ctx.getImageData(0, 0, paint.width, paint.height), paint.width, paint.height);
             window.preload.updateChanged();
       }
 });
@@ -476,7 +480,8 @@ paintSelectCancel.addEventListener('click', (_e) => {
 
 paintSelectReset.addEventListener('click', (_e) => {
       ctx.clearRect(selectionX, selectionY, selectionW, selectionH);
-      window.preload.addHistory(paint.toDataURL());
+      window.preload.addHistory(paint.toDataURL(),
+            ctx.getImageData(0, 0, paint.width, paint.height), paint.width, paint.height);
       window.preload.updateChanged();
 
       resetSelection();

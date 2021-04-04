@@ -8,6 +8,8 @@ var fnPosition;
 
 var currentFile = '';
 var url = [''];
+var imgData = [];
+var width = [0], height = [0];
 var urlIndex = 1;
 var fileChanged = false;
 
@@ -80,27 +82,36 @@ function refreshImage() {
       var ctx = paint.getContext('2d');
       ctx.clearRect(0, 0, paint.width, paint.height);
       var curImage = getCurrentHistory();
-      if (curImage != '') {
-            var imgCache = document.getElementById('imgCache');
-            imgCache.onload = () => ctx.drawImage(imgCache, 0, 0);
-            imgCache.src = curImage;
+      if (curImage !== undefined) {
+            ctx.putImageData(curImage, 0, 0);
       }
 }
 
-function addHistory(newUrl) {
+function addHistory(newUrl, newImgData, w, h) {
       if (urlIndex > 1) {
             url = url.slice(0, url.length - urlIndex + 1);
+            imgData = imgData.slice(0, imgData.length - urlIndex + 1);
+            width = width.slice(0, width.length - urlIndex + 1);
+            height = height.slice(0, height.length - urlIndex + 1);
             urlIndex = 1;
       }
       url.push(newUrl);
+      imgData.push(newImgData);
+      width.push(w);
+      height.push(h);
 }
 
-function setCurrentHistory(currentUrl) {
+function setCurrentHistory(currentUrl, currentImgData, w, h) {
       url[url.length - urlIndex] = currentUrl;
+      imgData[imgData.length - urlIndex] = currentImgData;
+      width[width.length - urlIndex] = w;
+      height[height.length - urlIndex] = h;
 }
 
 function getCurrentHistory() {
-      return url[url.length - urlIndex];
+      return new ImageData(imgData[imgData.length - urlIndex].data,
+            width[width.length - urlIndex],
+            height[height.length - urlIndex]);
 }
 
 contextBridge.exposeInMainWorld('preload', {
