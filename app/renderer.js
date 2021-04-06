@@ -154,6 +154,27 @@ var drawing = {
             }
       }, true, true, true),
 
+      'ellipse': new Drawing(function (mouse) {
+            window.preload.refreshImage();
+
+            if (fnSetStroke.checked) {
+                  ctx.lineWidth = fnSetStrokeThickness.value;
+            } else {
+                  ctx.lineWidth = 0;
+            }
+
+            ctx.beginPath();
+            var rx = (mouse.offsetX - startX) / 2;
+            var ry = (mouse.offsetY - startY) / 2;
+            ctx.ellipse(startX + rx, startY + ry, rx, ry, 0, 0, Math.PI * 2);
+            if (fnSetStroke.checked) {
+                  ctx.stroke();
+            }
+            if (fnSetFill.checked) {
+                  ctx.fill();
+            }
+      }, true, true, true),
+
       'text': new Drawing(null, true, true, true),
 
       'fill': new Drawing(null, false, false, true),
