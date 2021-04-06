@@ -1,6 +1,6 @@
 {
   "name": "painter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "An example of painter written with Electron",
   "main": "src/main.js",
   "scripts": {
